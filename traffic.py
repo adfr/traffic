@@ -3,7 +3,7 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
-
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 EPOCHS = 30
@@ -38,6 +38,7 @@ def main():
 
     # Evaluate neural network performance
     model.evaluate(x_test,  y_test, verbose=2)
+    make_plot(x_test, y_test, model)
 
     # Save model to file
     if len(sys.argv) == 3:
@@ -80,7 +81,8 @@ def get_model():
     The output layer should have `NUM_CATEGORIES` units, one for each category.
     """
     model = tf.keras.models.Sequential()
-    model.add(tf.keras.layers.Conv2D(6, (3, 3), activation='relu', input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)))
+    model.add(tf.keras.layers.Conv2D(6, (3, 3), activation='relu',
+    input_shape=(IMG_WIDTH, IMG_HEIGHT, 3)))
     model.add(tf.keras.layers.MaxPooling2D((2, 2)))
     model.add(tf.keras.layers.Conv2D(16, (3, 3), activation='relu'))
     model.add(tf.keras.layers.MaxPooling2D((2, 2)))
@@ -93,6 +95,13 @@ def get_model():
               metrics=['accuracy'])
     model.summary()
     return model
+def make_plot(x_test, y_test, model):
+    source_id = np.random.randint(0, 1000)
+    plt.imshow(x_test[source_id,:,:,:])
+    plt.show()
+    print("actual category: ", np.argmax( y_test[source_id] ))
+    print("prediction category: ", np.argmax( model.predict(x_test[ [source_id , source_id+1],:,:,:])[0]) )
+
 
 
 if __name__ == "__main__":
